@@ -40,13 +40,12 @@ public class FilmController {
     }
 
     @PutMapping(value = "/films")
-    public Film update(@RequestBody Film film) {
-        if (films.containsKey(film.getId())) {
-            films.replace(film.getId(), film);
-        } else {
-            film.setId(++id);
-            films.put(film.getId(), film);
+    public Film update(@RequestBody Film film) throws Exception {
+        if (!films.containsKey(film.getId())) {
+            throw new Exception("Film with this ID doesn't exist.");
         }
+        film.setId(++id);
+        films.put(film.getId(), film);
         log.debug("Получен запрос PUT /film.");
         return film;
     }

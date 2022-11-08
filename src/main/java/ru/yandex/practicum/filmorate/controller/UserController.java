@@ -36,13 +36,13 @@ public class UserController {
     }
 
     @PutMapping(value = "/users")
-    public User update(@RequestBody User user) {
-        if (users.containsKey(user.getId())) {
-            users.replace(user.getId(), user);
-        } else {
-            user.setId(++id);
-            users.put(user.getId(), user);
+    public User update(@RequestBody User user) throws Exception {
+        if (!users.containsKey(user.getId())) {
+            throw new Exception("User with this ID doesn't exist.");
         }
+        user.setId(++id);
+        users.put(user.getId(), user);
+
         log.debug("Получен запрос PUT /user.");
         return user;
     }
