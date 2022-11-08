@@ -40,9 +40,7 @@ public class UserController {
         if (!users.containsKey(user.getId())) {
             throw new Exception("User with this ID doesn't exist.");
         }
-        user.setId(++id);
         users.put(user.getId(), user);
-
         log.debug("Получен запрос PUT /user.");
         return user;
     }

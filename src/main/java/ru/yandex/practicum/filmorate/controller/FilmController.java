@@ -44,7 +44,6 @@ public class FilmController {
         if (!films.containsKey(film.getId())) {
             throw new Exception("Film with this ID doesn't exist.");
         }
-        film.setId(++id);
         films.put(film.getId(), film);
         log.debug("Получен запрос PUT /film.");
         return film;
