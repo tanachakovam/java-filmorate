@@ -5,7 +5,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -17,14 +19,14 @@ public class UserController {
 
 
     @GetMapping("/users")
-    public Map<Integer, User> findAll() {
+    public List<User> findAll() {
         log.debug("Текущее количество пользователей: {}", users.size());
-        return users;
+        return new ArrayList<>(users.values());
     }
 
     @PostMapping(value = "/users")
     public User create(@Valid @RequestBody User user) {
-        if (user.getName().isEmpty()) {
+        if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
         user.setId(++id);
