@@ -61,6 +61,6 @@ class FilmorateApplicationTests {
 				.birthday(LocalDate.of(2022,11,1))
 				.build();
 		userController.create(user);
-		assertEquals(1, filmController.findAll().size());
+		assertEquals(1, userController.findAll().size());
 	}
 }
