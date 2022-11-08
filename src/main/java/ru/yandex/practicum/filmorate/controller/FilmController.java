@@ -25,7 +25,7 @@ public class FilmController {
         return films;
     }
 
-    @PostMapping(value = "/film")
+    @PostMapping(value = "/films")
     public Film create(@Valid @RequestBody Film film) throws MyValidationException {
         if (film.getReleaseDate().isBefore(FIRST_FILM_RELEASE)) {
             throw new MyValidationException("Incorrect release date.");
@@ -36,7 +36,7 @@ public class FilmController {
         return film;
     }
 
-    @PutMapping(value = "/film")
+    @PutMapping(value = "/films")
     public Film update(@RequestBody Film film) {
         if (films.containsKey(film.getId())) {
             films.replace(film.getId(), film);

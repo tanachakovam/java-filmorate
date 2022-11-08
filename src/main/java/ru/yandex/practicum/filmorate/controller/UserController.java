@@ -22,7 +22,7 @@ public class UserController {
         return users;
     }
 
-    @PostMapping(value = "/user")
+    @PostMapping(value = "/users")
     public User create(@Valid @RequestBody User user) {
         if (user.getName().isEmpty()) {
             user.setName(user.getLogin());
@@ -33,7 +33,7 @@ public class UserController {
         return user;
     }
 
-    @PutMapping(value = "/user")
+    @PutMapping(value = "/users")
     public User update(@RequestBody User user) {
         if (users.containsKey(user.getId())) {
             users.replace(user.getId(), user);
