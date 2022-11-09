@@ -20,7 +20,7 @@ public class UserController {
 
     @GetMapping("/users")
     public List<User> findAll() {
-        log.debug("Текущее количество пользователей: {}", users.size());
+        log.info("Получен запрос GET /users. Текущее количество пользователей: {}.", users.size());
         return new ArrayList<>(users.values());
     }
 
@@ -31,7 +31,7 @@ public class UserController {
         }
         user.setId(++id);
         users.put(user.getId(), user);
-        log.debug("Получен запрос POST /user.");
+        log.info("Получен запрос POST /users. Создан пользователь {}.", user.getName());
         return user;
     }
 
@@ -41,7 +41,7 @@ public class UserController {
             throw new Exception("User with this ID doesn't exist.");
         }
         users.put(user.getId(), user);
-        log.debug("Получен запрос PUT /user.");
+        log.info("Получен запрос PUT /users. Данные пользователя {} обновлены.", user.getName());
         return user;
     }
 }

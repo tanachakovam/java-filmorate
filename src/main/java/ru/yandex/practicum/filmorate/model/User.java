@@ -7,17 +7,20 @@ import lombok.NonNull;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 
 @Data
 @Builder
 public class User {
-    int id;
+    private int id;
     @Email
-    String email;
-    @NonNull @NotBlank
-    String login;
-    String name;
+    private String email;
+    @NonNull
+    @NotBlank
+    @Pattern(regexp = "^\\S*$")
+    private String login;
+    private String name;
     @PastOrPresent
-    LocalDate birthday;
+    private LocalDate birthday;
 }

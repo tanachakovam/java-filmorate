@@ -24,7 +24,7 @@ public class FilmController {
 
     @GetMapping("/films")
     public List<Film> findAll() {
-        log.info("Текущее количество фильмов: {}", films.size());
+        log.info("Получен запрос GET /films. Текущее количество фильмов: {}.", films.size());
         return new ArrayList<>(films.values());
     }
 
@@ -35,7 +35,7 @@ public class FilmController {
         }
         film.setId(++id);
         films.put(film.getId(), film);
-        log.info("Получен запрос POST /film.");
+        log.info("Получен запрос POST /films. Фильм {} добавлен.", film.getName());
         return film;
     }
 
@@ -45,7 +45,7 @@ public class FilmController {
             throw new Exception("Film with this ID doesn't exist.");
         }
         films.put(film.getId(), film);
-        log.debug("Получен запрос PUT /film.");
+        log.info("Получен запрос PUT /films. Фильм {} обновлен.", film.getName());
         return film;
     }
 }
