@@ -39,6 +39,9 @@ public class UserService {
 
     public void addFriend(int userId, int friendId) {
         User user = userStorage.get(userId);
+        if (friendId <= 0 || userStorage.get(friendId) == null) {
+            throw new UserNotFoundException("Friend with this ID doesn't exist.");
+        }
         User friend = userStorage.get(friendId);
         userStorage.addFriend(user, friend);
     }

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmReleaseException;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.*;
@@ -38,6 +39,14 @@ public class InMemoryFilmStorage implements FilmStorage {
         return film;
     }
 
+    public Film getFilm(int id) {
+        if (!films.containsKey(id)) {
+            throw new FilmNotFoundException("Film with this ID doesn't exist.");
+        }
+        return films.get(id);
+    }
+
+
     public Film putLike(int id, int userId) {
         if (!films.containsKey(id)) {
             throw new FilmNotFoundException("Film with this ID doesn't exist.");
@@ -49,6 +58,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film deleteLike(int id, int userId) {
         if (!films.containsKey(id)) {
             throw new FilmNotFoundException("Film with this ID doesn't exist.");
+        }
+        if (userId <= 0) {
+            throw new UserNotFoundException("User with this ID doesn't exist.");
         }
         films.get(id).getLikes().remove(userId);
         return films.get(id);

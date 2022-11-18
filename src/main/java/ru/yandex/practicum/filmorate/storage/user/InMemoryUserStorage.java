@@ -42,7 +42,11 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     public void addFriend(User user, User friend) {
+        if (!users.containsKey(user.getId())) {
+            throw new UserNotFoundException("User with this ID doesn't exist.");
+        }
         user.getFriends().add(friend.getId());
+
         friend.getFriends().add(user.getId());
 
     }

@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
 
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.FilmReleaseException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -29,6 +28,10 @@ public class FilmService {
 
     public Film update(Film film) throws FilmNotFoundException {
         return filmStorage.update(film);
+    }
+
+    public Film getFilm(int id) {
+        return filmStorage.getFilm(id);
     }
 
     public Film putLike(int id, int userId) {

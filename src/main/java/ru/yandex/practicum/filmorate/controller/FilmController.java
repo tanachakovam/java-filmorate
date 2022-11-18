@@ -40,6 +40,12 @@ public class FilmController {
         return filmService.update(film);
     }
 
+    @GetMapping ("/films/{id}")
+    Film getFilm (@PathVariable int id) {
+        log.info("Найдем пользователя по id = " + id + ".");
+        return filmService.getFilm(id);
+    }
+
     // PUT /films/{id}/like/{userId} — пользователь ставит лайк фильму.
     @PutMapping("/films/{id}/like/{userId}")
     void putLike(@PathVariable int id, @PathVariable int userId) {
