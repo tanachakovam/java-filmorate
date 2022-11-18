@@ -21,7 +21,7 @@ public class UserController {
     }
 
     @GetMapping()
-    List<User> getAllUsers() {
+    public List<User> getAllUsers() {
         log.info("Получен запрос GET /users. Список всех пользователей");
         return userService.getAllUsers();
     }
@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @PostMapping
-    User create(@Valid @RequestBody User user) {
+    public User create(@Valid @RequestBody User user) {
         log.info("Получен запрос POST /users. Создан пользователь {}.", user.getName());
         return userService.create(user);
     }

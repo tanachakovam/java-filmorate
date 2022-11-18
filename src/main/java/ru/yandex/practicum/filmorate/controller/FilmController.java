@@ -23,13 +23,13 @@ public class FilmController {
     }
 
     @GetMapping("/films")
-    List<Film> findAll() {
+    public List<Film> findAll() {
         log.info("Получен запрос GET /films.");
         return filmService.findAll();
     }
 
     @PostMapping(value = "/films")
-    Film create(@Valid @RequestBody Film film) throws FilmReleaseException {
+    public Film create(@Valid @RequestBody Film film) throws FilmReleaseException {
         log.info("Получен запрос POST /films. Фильм {} добавлен.", film.getName());
         return filmService.create(film);
     }
@@ -42,16 +42,16 @@ public class FilmController {
 
     // PUT /films/{id}/like/{userId} — пользователь ставит лайк фильму.
     @PutMapping("/films/{id}/like/{userId}")
-    Film putLike(@PathVariable int id, @PathVariable int userId) {
+    void putLike(@PathVariable int id, @PathVariable int userId) {
         log.info("Пользователь ставит лайк фильму.");
-        return filmService.putLike(id, userId);
+        filmService.putLike(id, userId);
     }
 
     //DELETE /films/{id}/like/{userId} — пользователь удаляет лайк.
     @DeleteMapping("/films/{id}/like/{userId}")
-    Film deleteLike(@PathVariable int id, @PathVariable int userId) {
+    void deleteLike(@PathVariable int id, @PathVariable int userId) {
         log.info("Пользователь удаляет лайк.");
-        return filmService.deleteLike(id, userId);
+        filmService.deleteLike(id, userId);
     }
 
     //GET /films/popular?count={count} — возвращает список из первых count фильмов по количеству лайков. Если значение параметра count не задано, верните первые 10.
