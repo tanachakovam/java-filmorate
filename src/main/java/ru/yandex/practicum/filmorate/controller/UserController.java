@@ -13,8 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("users")
 public class UserController {
-    final
-    UserService userService;
+    private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -27,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    User getUser(@PathVariable int userId) {
+    public User getUser(@PathVariable int userId) {
         log.info("Найдем пользователя по id = " + userId + ".");
         return userService.get(userId);
     }
@@ -39,12 +38,12 @@ public class UserController {
     }
 
     @PutMapping
-    User update(@RequestBody User user) {
+    public User update(@RequestBody User user) {
         log.info("Получен запрос PUT /users. Данные пользователя {} обновлены.", user.getName());
         return userService.update(user);
     }
 
-//PUT /users/{id}/friends/{friendId} — добавление в друзья.
+    //PUT /users/{id}/friends/{friendId} — добавление в друзья.
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable int id, @PathVariable int friendId) {
         log.info("Добавление в друзья.");

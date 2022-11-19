@@ -11,8 +11,7 @@ import java.util.List;
 
 @Service
 public class FilmService {
-    final
-    FilmStorage filmStorage;
+    private final FilmStorage filmStorage;
 
     public FilmService(FilmStorage filmStorage) {
         this.filmStorage = filmStorage;

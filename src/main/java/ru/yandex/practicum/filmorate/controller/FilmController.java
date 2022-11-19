@@ -15,8 +15,7 @@ import java.util.List;
 @RestController
 public class FilmController {
 
-    final
-    FilmService filmService;
+    private final FilmService filmService;
 
     public FilmController(FilmService filmService) {
         this.filmService = filmService;
@@ -35,34 +34,34 @@ public class FilmController {
     }
 
     @PutMapping(value = "/films")
-    Film update(@RequestBody Film film) {
+    public Film update(@RequestBody Film film) {
         log.info("Получен запрос PUT /films. Фильм {} обновлен.", film.getName());
         return filmService.update(film);
     }
 
-    @GetMapping ("/films/{id}")
-    Film getFilm (@PathVariable int id) {
+    @GetMapping("/films/{id}")
+    public Film getFilm(@PathVariable int id) {
         log.info("Найдем пользователя по id = " + id + ".");
         return filmService.getFilm(id);
     }
 
     // PUT /films/{id}/like/{userId} — пользователь ставит лайк фильму.
     @PutMapping("/films/{id}/like/{userId}")
-    void putLike(@PathVariable int id, @PathVariable int userId) {
+    public void putLike(@PathVariable int id, @PathVariable int userId) {
         log.info("Пользователь ставит лайк фильму.");
         filmService.putLike(id, userId);
     }
 
     //DELETE /films/{id}/like/{userId} — пользователь удаляет лайк.
     @DeleteMapping("/films/{id}/like/{userId}")
-    void deleteLike(@PathVariable int id, @PathVariable int userId) {
+    public void deleteLike(@PathVariable int id, @PathVariable int userId) {
         log.info("Пользователь удаляет лайк.");
         filmService.deleteLike(id, userId);
     }
 
     //GET /films/popular?count={count} — возвращает список из первых count фильмов по количеству лайков. Если значение параметра count не задано, верните первые 10.
     @GetMapping("/films/popular")
-    List<Film> findPopularFilms(@RequestParam(value = "count", defaultValue = "10", required = false) Integer count) {
+    public List<Film> findPopularFilms(@RequestParam(value = "count", defaultValue = "10", required = false) Integer count) {
         log.info("возвращает список из первых count фильмов по количеству лайков. Если значение параметра count не задано, верните первые 10.");
         return filmService.findPopularFilms(count);
     }
