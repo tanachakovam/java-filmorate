@@ -67,9 +67,9 @@ public class FilmService {
         return filmStorage.getAllMpa();
     }
 
-    public List<Genre> getGenreById(int id) {
+    public Genre getGenreById(int id) {
         if (filmStorage.getFilm(id) == null) {
-            throw new FilmNotFoundException("Film doesn't exist.");
+            throw new FilmNotFoundException("Genre doesn't exist.");
         }
         return filmStorage.getGenreById(id);
     }

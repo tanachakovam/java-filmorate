@@ -87,13 +87,14 @@ public class FilmDbStorage implements FilmStorage {
 
     public Film update(Film film) throws FilmNotFoundException {
         String sqlQuery = "update films set " +
-                "FILM_NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ? " +
+                "FILM_NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, MPA_ID = ? " +
                 "where id = ?";
         jdbcTemplate.update(sqlQuery
                 , film.getName()
                 , film.getDescription()
                 , film.getReleaseDate()
                 , film.getDuration()
+                , film.getMpa()
                 , film.getId());
         return film;
     }
@@ -132,9 +133,12 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "select ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, f.MPA_ID " +
                 " from films AS f " +
                 "join likes as l ON f.id = l.film_id " +
+                "join mpa as m ON f.MPA_ID = m.MPA_ID " +
+                "left join FILM_GENRES as fg ON f.id = fg.film_id " +
+                "left join GENRES as g ON fg.GENRE_ID = g.GENRE_ID " +
                 "group by FILM_NAME, DESCRIPTION,RELEASE_DATE, DURATION, MPA_ID " +
                 "LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
+        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, Math.max(count, 0));
     }
 
     private Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
@@ -145,7 +149,7 @@ public class FilmDbStorage implements FilmStorage {
                 .releaseDate(rs.getDate("release_date").toLocalDate())
                 .duration(rs.getInt("duration"))
                 .mpa(getMpaById(rs.getInt("id")))
-                .genres(getGenreById(rs.getInt("id")))
+                .genres(getGenreByFilmId(rs.getInt("id")))
                 .build();
     }
 
@@ -181,12 +185,23 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, FilmDbStorage::mapRowToMpa);
     }
 
-    public List<Genre> getGenreById(int id) {
+    public List<Genre> getGenreByFilmId(int id) {
         String sqlQuery = "select fg.genre_id, g.GENRE_NAME " +
                 "from film_genres AS fg " +
                 "join GENRES as g ON fg.GENRE_ID = g.GENRE_ID " +
                 "where fg.FILM_ID = ?";
         return jdbcTemplate.query(sqlQuery, FilmDbStorage::mapRowToGenre, id);
+    }
+
+    public Genre getGenreById(int id) {
+        String sqlQuery = "select g.genre_id, g.GENRE_NAME " +
+                "from GENRES as g " +
+                "where GENRE_ID = ?";
+        List<Genre> genres = jdbcTemplate.query(sqlQuery, FilmDbStorage::mapRowToGenre, id);
+        if (genres.size() != 1) {
+            return null;
+        }
+        return genres.get(0);
     }
 
     public List<Genre> getAllGenres() {

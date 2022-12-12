@@ -28,7 +28,7 @@ public interface FilmStorage {
 
     List<Mpa> getAllMpa();
 
-    List<Genre> getGenreById(int id);
+    Genre getGenreById(int id);
 
     List<Genre> getAllGenres();
 }

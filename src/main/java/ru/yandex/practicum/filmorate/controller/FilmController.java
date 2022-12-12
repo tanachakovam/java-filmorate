@@ -75,7 +75,7 @@ public class FilmController {
     }
 
     @GetMapping("/genres/{id}")
-    public List<Genre> getGenreById(@PathVariable int id) {
+    public Genre getGenreById(@PathVariable int id) {
         log.info("Найдем список всех жанров по идентификатору фильма");
         return filmService.getGenreById(id);
     }
