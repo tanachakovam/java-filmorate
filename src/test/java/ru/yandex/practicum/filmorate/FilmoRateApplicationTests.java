@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -14,6 +15,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +25,16 @@ import java.util.Optional;
 class FilmoRateApplicationTests {
     private final UserDbStorage userStorage;
     private final FilmDbStorage filmStorage;
+
+    @BeforeEach
+    public void create() {
+        User user = new User("email","login", "name", LocalDate.of(1990, 01,11));
+        userStorage.create(user);
+        Mpa mpa = new Mpa(1, "G");
+        Genre genre = new Genre(1, "Комедия");
+        Film film = new Film("name", "description",LocalDate.of(1990, 11,11), 120, mpa, List.of(genre));
+        filmStorage.create(film);
+    }
 
     @Test
     public void testFindUserById() {
@@ -89,4 +101,6 @@ class FilmoRateApplicationTests {
                         assertThat(genres).hasSizeLessThanOrEqualTo(6)
                 );
     }
+
+
 }
