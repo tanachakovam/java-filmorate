@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 
 
+import ru.yandex.practicum.filmorate.exception.FilmReleaseException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -14,6 +15,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.*;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +24,7 @@ import java.util.Map;
 @Qualifier
 @Repository
 public class FilmDbStorage implements FilmStorage {
+    private static final LocalDate FIRST_FILM_RELEASE = LocalDate.of(1895, 12, 18);
     private final JdbcTemplate jdbcTemplate;
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
@@ -35,19 +38,22 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm);
     }
 
-    public Film create(Film film) {
+    public Film create(Film film) throws FilmReleaseException {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("films")
                 .usingGeneratedKeyColumns("id");
         Map<String, Object> values = new HashMap<>();
         values.put("film_name", film.getName());
         values.put("description", film.getDescription());
+        if (film.getReleaseDate().isBefore(FIRST_FILM_RELEASE)) {
+            throw new FilmReleaseException("Incorrect release date.");
+        }
         values.put("release_date", film.getReleaseDate());
         values.put("duration", film.getDuration());
         values.put("mpa_id", film.getMpa().getId());
         simpleJdbcInsert.execute(values);
         saveGenre(film);
-        return getFilm(film.getId());
+        return film;
     }
 
 
@@ -123,6 +129,7 @@ public class FilmDbStorage implements FilmStorage {
                 .name(rs.getString("film_name"))
                 .description(rs.getString("description"))
                 .releaseDate(rs.getDate("release_date").toLocalDate())
+                .duration(rs.getInt("duration"))
                 .mpa(new Mpa(rs.getInt("mpa_id"), rs.getString("MPA.mpa_name")))
                 .genres(getGenreById(rs.getInt("id")))
                 .build();

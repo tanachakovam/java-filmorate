@@ -40,6 +40,9 @@ public class UserDbStorage implements UserStorage {
             PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"id"});
             stmt.setString(1, user.getEmail());
             stmt.setString(2, user.getLogin());
+            if (user.getName() == null || user.getName().isBlank()) {
+                user.setName(user.getLogin());
+            }
             stmt.setString(3, user.getName());
             final LocalDate birthday = user.getBirthday();
             if (birthday == null) {

@@ -28,6 +28,9 @@ public class FilmService {
     }
 
     public Film update(Film film) throws FilmNotFoundException {
+        if (filmStorage.getFilm(film.getId()) == null) {
+            throw new FilmNotFoundException("Film with this ID doesn't exist.");
+        }
         return filmStorage.update(film);
     }
 
@@ -40,6 +43,9 @@ public class FilmService {
     }
 
     public Film deleteLike(int id, int userId) {
+        if (filmStorage.getFilm(id) == null) {
+            throw new FilmNotFoundException("Film doesn't exist.");
+        }
         return filmStorage.deleteLike(id, userId);
     }
 
@@ -48,6 +54,9 @@ public class FilmService {
     }
 
     public Mpa getMpaById(int id) {
+        if (filmStorage.getFilm(id) == null) {
+            throw new FilmNotFoundException("Film doesn't exist.");
+        }
         return filmStorage.getMpaById(id);
     }
 
@@ -56,6 +65,9 @@ public class FilmService {
     }
 
     public List<Genre> getGenreById(int id) {
+        if (filmStorage.getFilm(id) == null) {
+            throw new FilmNotFoundException("Film doesn't exist.");
+        }
         return filmStorage.getGenreById(id);
     }
 

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.exception.FilmReleaseException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -27,7 +28,7 @@ class FilmoRateApplicationTests {
     private final FilmDbStorage filmStorage;
 
     @BeforeEach
-    public void create() {
+    public void create() throws FilmReleaseException {
         User user = new User("email","login", "name", LocalDate.of(1990, 01,11));
         userStorage.create(user);
         Mpa mpa = new Mpa(1, "G");
