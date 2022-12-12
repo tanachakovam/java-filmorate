@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.FilmReleaseException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.List;
@@ -43,5 +45,21 @@ public class FilmService {
 
     public List<Film> findPopularFilms(int count) {
         return filmStorage.findPopularFilms(count);
+    }
+
+    public Mpa getMpaById(int id) {
+        return filmStorage.getMpaById(id);
+    }
+
+    public List<Mpa> getAllMpa() {
+        return filmStorage.getAllMpa();
+    }
+
+    public List<Genre> getGenreById(int id) {
+        return filmStorage.getGenreById(id);
+    }
+
+    public List<Genre> getAllGenres() {
+        return filmStorage.getAllGenres();
     }
 }

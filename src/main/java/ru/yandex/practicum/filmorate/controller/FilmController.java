@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.FilmReleaseException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 
@@ -65,6 +67,31 @@ public class FilmController {
         log.info("возвращает список из первых count фильмов по количеству лайков. Если значение параметра count не задано, верните первые 10.");
         return filmService.findPopularFilms(count);
     }
+
+    @GetMapping("/genres")
+    public List<Genre> getAllGenres() {
+        log.info("Получен запрос GET /genres.");
+        return filmService.getAllGenres();
+    }
+
+    @GetMapping("/genres/{id}")
+    public List<Genre> getGenreById(@PathVariable int id) {
+        log.info("Найдем список всех жанров по идентификатору фильма");
+        return filmService.getGenreById(id);
+    }
+
+    @GetMapping("/mpa")
+    public List<Mpa>  getAllMpa() {
+        log.info("Получен запрос GET /mpa.");
+        return filmService.getAllMpa();
+    }
+
+    @GetMapping("/mpa/{id}")
+    public Mpa getMpaById(@PathVariable int id) {
+        log.info("Найдем mpa по идентификатору фильма");
+        return filmService.getMpaById(id);
+    }
+
 }
 
 
