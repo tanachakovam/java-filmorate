@@ -35,6 +35,9 @@ public class FilmService {
     }
 
     public Film getFilm(int id) {
+        if (filmStorage.getFilm(id) == null) {
+            throw new FilmNotFoundException("Film doesn't exist.");
+        }
         return filmStorage.getFilm(id);
     }
 

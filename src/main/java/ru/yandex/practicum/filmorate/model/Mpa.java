@@ -10,4 +10,8 @@ import lombok.*;
 public class Mpa {
     int id;
     private String name;
+
+    public Mpa(int id) {
+        this.id = id;
+    }
 }

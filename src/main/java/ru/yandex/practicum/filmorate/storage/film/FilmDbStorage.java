@@ -3,11 +3,14 @@ package ru.yandex.practicum.filmorate.storage.film;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 
 
 import ru.yandex.practicum.filmorate.exception.FilmReleaseException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -32,26 +35,37 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public List<Film> findAll() {
-        String sqlQuery = "select ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, m.MPA_ID, m.mpa_name " +
-                " from films AS f " +
-                "JOIN MPA AS m ON f.mpa_id = m.mpa_id";
+        String sqlQuery = "select ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA_ID " +
+                "from films AS f";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm);
     }
 
     public Film create(Film film) throws FilmReleaseException {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("films")
-                .usingGeneratedKeyColumns("id");
-        Map<String, Object> values = new HashMap<>();
-        values.put("film_name", film.getName());
-        values.put("description", film.getDescription());
-        if (film.getReleaseDate().isBefore(FIRST_FILM_RELEASE)) {
-            throw new FilmReleaseException("Incorrect release date.");
-        }
-        values.put("release_date", film.getReleaseDate());
-        values.put("duration", film.getDuration());
-        values.put("mpa_id", film.getMpa().getId());
-        simpleJdbcInsert.execute(values);
+        String sqlQuery = "insert into FILMS (FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA_ID) " +
+                "values (?, ?, ?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"id"});
+            stmt.setString(1, film.getName());
+            stmt.setString(2, film.getDescription());
+            if (film.getReleaseDate().isBefore(FIRST_FILM_RELEASE)) {
+                try {
+                    throw new FilmReleaseException("Incorrect release date.");
+                } catch (FilmReleaseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            final LocalDate releaseDate = film.getReleaseDate();
+            if (releaseDate == null) {
+                stmt.setNull(3, Types.DATE);
+            } else {
+                stmt.setDate(3, Date.valueOf(releaseDate));
+            }
+            stmt.setInt(4, film.getDuration());
+            stmt.setInt(5, film.getMpa().getId());
+            return stmt;
+        }, keyHolder);
+        film.setId(keyHolder.getKey().intValue());
         saveGenre(film);
         return film;
     }
@@ -69,7 +83,6 @@ public class FilmDbStorage implements FilmStorage {
                     "values (?,?)";
             jdbcTemplate.update(sqlQuery1, film.getId(), genre.getId());
         }
-
     }
 
     public Film update(Film film) throws FilmNotFoundException {
@@ -86,9 +99,8 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public Film getFilm(int id) {
-        String sqlQuery = "select ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, m.MPA_ID, m.mpa_name " +
+        String sqlQuery = "select ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA_ID " +
                 " from films AS f " +
-                "JOIN MPA AS m ON f.mpa_id = m.mpa_id " +
                 "where id = ?";
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, id);
         if (films.size() != 1) {
@@ -108,17 +120,19 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public Film deleteLike(int id, int userId) {
+        if (userId < 0) {
+            throw new UserNotFoundException("User doesn't exist.");
+        }
         String sqlQuery = "delete from likes where film_id = ? and user_id = ?";
         jdbcTemplate.update(sqlQuery, id, userId);
         return getFilm(id);
     }
 
     public List<Film> findPopularFilms(int count) {
-        String sqlQuery = "select ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, m.MPA_ID, m.mpa_name " +
+        String sqlQuery = "select ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, f.MPA_ID " +
                 " from films AS f " +
-                "JOIN MPA AS m ON f.mpa_id = m.mpa_id " +
                 "join likes as l ON f.id = l.film_id " +
-                "group by FILM_NAME, DESCRIPTION,RELEASE_DATE, DURATION, m.MPA_ID, m.mpa_name " +
+                "group by FILM_NAME, DESCRIPTION,RELEASE_DATE, DURATION, MPA_ID " +
                 "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
     }
@@ -130,7 +144,7 @@ public class FilmDbStorage implements FilmStorage {
                 .description(rs.getString("description"))
                 .releaseDate(rs.getDate("release_date").toLocalDate())
                 .duration(rs.getInt("duration"))
-                .mpa(new Mpa(rs.getInt("mpa_id"), rs.getString("MPA.mpa_name")))
+                .mpa(getMpaById(rs.getInt("id")))
                 .genres(getGenreById(rs.getInt("id")))
                 .build();
     }
@@ -155,7 +169,11 @@ public class FilmDbStorage implements FilmStorage {
                 "from MPA AS m " +
                 "join Films AS f ON m.MPA_ID = f.MPA_ID " +
                 "where f.ID = ?";
-        return jdbcTemplate.queryForObject(sqlQuery, FilmDbStorage::mapRowToMpa, id);
+        List<Mpa> mpas = jdbcTemplate.query(sqlQuery, FilmDbStorage::mapRowToMpa, id);
+        if (mpas.size() != 1) {
+            return null;
+        }
+        return mpas.get(0);
     }
 
     public List<Mpa> getAllMpa() {
