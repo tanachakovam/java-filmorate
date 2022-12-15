@@ -9,6 +9,7 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Setter
@@ -39,4 +40,5 @@ public class Film {
         this.mpa = mpa;
         this.genres = genres;
     }
+
 }

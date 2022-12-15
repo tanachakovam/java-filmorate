@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Qualifier
@@ -78,7 +79,8 @@ public class FilmDbStorage implements FilmStorage {
         if (film.getGenres() == null || film.getGenres().isEmpty()) {
             return;
         }
-        for (Genre genre : film.getGenres()) {
+        List<Genre> uniqueGenres = film.getGenres().stream().distinct().collect(Collectors.toList());
+        for (Genre genre : uniqueGenres) {
             String sqlQuery1 = "insert into film_genres(film_id, genre_id) " +
                     "values (?,?)";
             jdbcTemplate.update(sqlQuery1, film.getId(), genre.getId());
@@ -94,9 +96,10 @@ public class FilmDbStorage implements FilmStorage {
                 , film.getDescription()
                 , film.getReleaseDate()
                 , film.getDuration()
-                , film.getMpa()
+                , film.getMpa().getId()
                 , film.getId());
-        return film;
+        saveGenre(film);
+        return getFilm(film.getId());
     }
 
     public Film getFilm(int id) {
@@ -136,7 +139,7 @@ public class FilmDbStorage implements FilmStorage {
                 "join mpa as m ON f.MPA_ID = m.MPA_ID " +
                 "left join FILM_GENRES as fg ON f.id = fg.film_id " +
                 "left join GENRES as g ON fg.GENRE_ID = g.GENRE_ID " +
-                "group by FILM_NAME, DESCRIPTION,RELEASE_DATE, DURATION, MPA_ID " +
+                "group by FILM_NAME, DESCRIPTION,RELEASE_DATE, DURATION, f.MPA_ID " +
                 "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, Math.max(count, 0));
     }
