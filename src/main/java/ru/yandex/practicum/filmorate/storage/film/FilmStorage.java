@@ -19,6 +19,7 @@ public interface FilmStorage {
     Film putLike(int id, int userId);
 
     Film deleteLike(int id, int userId);
+    Film deleteLikeAll(int id);
 
     Film getFilm(int id);
 

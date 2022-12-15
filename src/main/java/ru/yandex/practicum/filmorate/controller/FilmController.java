@@ -92,6 +92,12 @@ public class FilmController {
         return filmService.getMpaById(id);
     }
 
+    //DELETE /films/{id}/like/ —  удаляет лайк.
+    @DeleteMapping("/films/{id}/like/")
+    public void deleteLikeAll(@PathVariable int id) {
+        log.info(" удаляет лайк.");
+        filmService.deleteLikeAll(id);
+    }
 }
 
 

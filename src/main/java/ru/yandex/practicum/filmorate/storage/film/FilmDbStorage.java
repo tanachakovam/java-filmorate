@@ -132,17 +132,25 @@ public class FilmDbStorage implements FilmStorage {
         return getFilm(id);
     }
 
+    public Film deleteLikeAll(int id) {
+        String sqlQuery = "delete from likes where film_id = ?";
+        jdbcTemplate.update(sqlQuery, id);
+        return getFilm(id);
+    }
+
     public List<Film> findPopularFilms(int count) {
-        String sqlQuery = "select ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, f.MPA_ID " +
+        String sqlQuery = "select ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, f.MPA_ID, COUNT(l.FILM_ID) AS likes" +
                 " from films AS f " +
-                "join likes as l ON f.id = l.film_id " +
                 "join mpa as m ON f.MPA_ID = m.MPA_ID " +
                 "left join FILM_GENRES as fg ON f.id = fg.film_id " +
                 "left join GENRES as g ON fg.GENRE_ID = g.GENRE_ID " +
-                "group by FILM_NAME, DESCRIPTION,RELEASE_DATE, DURATION, f.MPA_ID " +
+                "left join likes as l ON f.id = l.film_id " +
+                "group by ID, FILM_NAME, DESCRIPTION,RELEASE_DATE, DURATION, f.MPA_ID " +
+                "order by likes DESC " +
                 "LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, Math.max(count, 0));
+        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
     }
+
 
     private Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
         return Film.builder()
@@ -151,7 +159,7 @@ public class FilmDbStorage implements FilmStorage {
                 .description(rs.getString("description"))
                 .releaseDate(rs.getDate("release_date").toLocalDate())
                 .duration(rs.getInt("duration"))
-                .mpa(getMpaById(rs.getInt("id")))
+                .mpa(getMpaByFilmId(rs.getInt("id")))
                 .genres(getGenreByFilmId(rs.getInt("id")))
                 .build();
     }
@@ -172,6 +180,13 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public Mpa getMpaById(int id) {
+        String sqlQuery = "select m.MPA_ID, MPA_NAME " +
+                "from MPA AS m " +
+                "where MPA_ID = ?";
+        return jdbcTemplate.queryForObject(sqlQuery, FilmDbStorage::mapRowToMpa, id);
+    }
+
+    public Mpa getMpaByFilmId(int id) {
         String sqlQuery = "select m.MPA_ID, MPA_NAME " +
                 "from MPA AS m " +
                 "join Films AS f ON m.MPA_ID = f.MPA_ID " +

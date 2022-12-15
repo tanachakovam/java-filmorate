@@ -77,4 +77,11 @@ public class FilmService {
     public List<Genre> getAllGenres() {
         return filmStorage.getAllGenres();
     }
+
+    public Film deleteLikeAll(int id) {
+        if (filmStorage.getFilm(id) == null) {
+            throw new FilmNotFoundException("Film doesn't exist.");
+        }
+        return filmStorage.deleteLikeAll(id);
+    }
 }
