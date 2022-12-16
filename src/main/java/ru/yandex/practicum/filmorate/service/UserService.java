@@ -26,6 +26,9 @@ public class UserService {
     }
 
     public User update(User user) {
+        if (userStorage.get(user.getId()) == null) {
+            throw new UserNotFoundException("User with this ID doesn't exist.");
+        }
         return userStorage.update(user);
     }
 
