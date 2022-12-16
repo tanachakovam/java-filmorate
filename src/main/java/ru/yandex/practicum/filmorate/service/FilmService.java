@@ -8,15 +8,22 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 import java.util.List;
 
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final MpaStorage mpaStorage;
+    private final GenreStorage genreStorage;
 
-    public FilmService(FilmStorage filmStorage) {
+
+    public FilmService(FilmStorage filmStorage, MpaStorage mpaStorage, GenreStorage genreStorage) {
         this.filmStorage = filmStorage;
+        this.mpaStorage = mpaStorage;
+        this.genreStorage = genreStorage;
     }
 
     public List<Film> findAll() {
@@ -60,28 +67,21 @@ public class FilmService {
         if (filmStorage.getFilm(id) == null) {
             throw new FilmNotFoundException("Film doesn't exist.");
         }
-        return filmStorage.getMpaById(id);
+        return mpaStorage.getMpaById(id);
     }
 
     public List<Mpa> getAllMpa() {
-        return filmStorage.getAllMpa();
+        return mpaStorage.getAllMpa();
     }
 
     public Genre getGenreById(int id) {
         if (filmStorage.getFilm(id) == null) {
             throw new FilmNotFoundException("Genre doesn't exist.");
         }
-        return filmStorage.getGenreById(id);
+        return genreStorage.getGenreById(id);
     }
 
     public List<Genre> getAllGenres() {
-        return filmStorage.getAllGenres();
-    }
-
-    public Film deleteLikeAll(int id) {
-        if (filmStorage.getFilm(id) == null) {
-            throw new FilmNotFoundException("Film doesn't exist.");
-        }
-        return filmStorage.deleteLikeAll(id);
+        return genreStorage.getAllGenres();
     }
 }

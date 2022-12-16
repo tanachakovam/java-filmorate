@@ -81,7 +81,7 @@ public class FilmController {
     }
 
     @GetMapping("/mpa")
-    public List<Mpa>  getAllMpa() {
+    public List<Mpa> getAllMpa() {
         log.info("Получен запрос GET /mpa.");
         return filmService.getAllMpa();
     }
@@ -90,13 +90,6 @@ public class FilmController {
     public Mpa getMpaById(@PathVariable int id) {
         log.info("Найдем mpa по идентификатору фильма");
         return filmService.getMpaById(id);
-    }
-
-    //DELETE /films/{id}/like/ —  удаляет лайк.
-    @DeleteMapping("/films/{id}/like/")
-    public void deleteLikeAll(@PathVariable int id) {
-        log.info(" удаляет лайк.");
-        filmService.deleteLikeAll(id);
     }
 }
 

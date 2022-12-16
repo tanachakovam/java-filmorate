@@ -12,6 +12,8 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,14 +28,16 @@ import java.util.Optional;
 class FilmoRateApplicationTests {
     private final UserDbStorage userStorage;
     private final FilmDbStorage filmStorage;
+    private final MpaStorage mpaStorage;
+    private final GenreStorage genreStorage;
 
     @BeforeEach
     public void create() throws FilmReleaseException {
-        User user = new User("email","login", "name", LocalDate.of(1990, 01,11));
+        User user = new User("email", "login", "name", LocalDate.of(1990, 01, 11));
         userStorage.create(user);
         Mpa mpa = new Mpa(1, "G");
         Genre genre = new Genre(1, "Комедия");
-        Film film = new Film("name", "description",LocalDate.of(1990, 11,11), 120, mpa, List.of(genre));
+        Film film = new Film("name", "description", LocalDate.of(1990, 11, 11), 120, mpa, List.of(genre));
         filmStorage.create(film);
     }
 
@@ -84,7 +88,7 @@ class FilmoRateApplicationTests {
     @Test
     public void testFindMpas() {
 
-        Optional<List<Mpa>> mpaOptional = Optional.ofNullable(filmStorage.getAllMpa());
+        Optional<List<Mpa>> mpaOptional = Optional.ofNullable(mpaStorage.getAllMpa());
         assertThat(mpaOptional)
                 .isPresent()
                 .hasValueSatisfying(mpas ->
@@ -95,7 +99,7 @@ class FilmoRateApplicationTests {
     @Test
     public void testFindGenres() {
 
-        Optional<List<Genre>> genreOptional = Optional.ofNullable(filmStorage.getAllGenres());
+        Optional<List<Genre>> genreOptional = Optional.ofNullable(genreStorage.getAllGenres());
         assertThat(genreOptional)
                 .isPresent()
                 .hasValueSatisfying(genres ->
