@@ -29,4 +29,11 @@ public class User {
     private LocalDate birthday;
     @JsonIgnore
     Set<Integer> friends = new HashSet<>();
+
+    public User(String email, @NonNull String login, String name, LocalDate birthday) {
+        this.email = email;
+        this.login = login;
+        this.name = name;
+        this.birthday = birthday;
+    }
 }
